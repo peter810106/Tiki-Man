@@ -7,12 +7,13 @@ public class DetectLocation : MonoBehaviour {
 	
 	private Vector2 targetCoordinates;
 	private Vector2 deviceCoordinates;
-	private float distanceFromTarget = 0.004f;//0.00004f
+	private float distanceFromTarget = 0.0001f;//0.00004f
 	private float proximity;
 	private float sLatitude, sLongitude;
 
-	public float homeLatitude = 34.03221f, homeLongitude = -118.2799f;
-	public float dLatitude = 34.03279f, dLongitude = -118.2818f;
+	//public float homeLatitude = 34.03221f, homeLongitude = -118.2799f;
+	public float homeLatitude = 37.38408f, homeLongitude = 127.1268f;
+	public float dLatitude = 34.02143f, dLongitude = -118.2837f;
 	public float torjanLatitude = 34.02038f, torjanLongitude = -118.2852f;
 	public float leavyLatitude = 34.02164f, leavyLongitude = -118.2830f;
 	private bool detect = false;
@@ -73,39 +74,47 @@ public class DetectLocation : MonoBehaviour {
 
 
 	public void startCalculate(){
+		while(true){
+			deviceCoordinates = new Vector2 (sLatitude, sLongitude);
+			proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
 
-		deviceCoordinates = new Vector2 (sLatitude, sLongitude);
-		proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
+			if(proximity <= distanceFromTarget){
+				detect = true;
+				dLatitude = targetCoordinates[0];
+				dLongitude = targetCoordinates[1];
+				break;
+			}
 
-		if(proximity <= distanceFromTarget){
-			detect = true;
-		}
+			targetCoordinates = new Vector2 (homeLatitude, homeLongitude);
+			proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
 
-		targetCoordinates = new Vector2 (homeLatitude, homeLongitude);
-		proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
+			if(!detect && proximity <= distanceFromTarget){
+				detect = true;
+				dLatitude = targetCoordinates[0];
+				dLongitude = targetCoordinates[1];
+				break;
+			}
+				
+			targetCoordinates = new Vector2 (torjanLatitude, torjanLongitude);
+			proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
 
-		if(!detect && proximity <= distanceFromTarget){
-			detect = true;
-			dLatitude = targetCoordinates[0];
-			dLongitude = targetCoordinates[1];
-		}
-			
-		targetCoordinates = new Vector2 (torjanLatitude, torjanLongitude);
-		proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
+			if(!detect && proximity <= distanceFromTarget){
+				detect = true;
+				dLatitude = targetCoordinates[0];
+				dLongitude = targetCoordinates[1];
+				break;
+			}
 
-		if(!detect && proximity <= distanceFromTarget){
-			detect = true;
-			dLatitude = targetCoordinates[0];
-			dLongitude = targetCoordinates[1];
-		}
+			targetCoordinates = new Vector2 (leavyLatitude, leavyLongitude);
+			proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
 
-		targetCoordinates = new Vector2 (leavyLatitude, leavyLongitude);
-		proximity = Vector2.Distance (targetCoordinates, deviceCoordinates);
-
-		if(!detect && proximity <= distanceFromTarget){
-			detect = true;
-			dLatitude = targetCoordinates[0];
-			dLongitude = targetCoordinates[1];
+			if(!detect && proximity <= distanceFromTarget){
+				detect = true;
+				dLatitude = targetCoordinates[0];
+				dLongitude = targetCoordinates[1];
+				break;
+			}
+			break;
 		}
 
 		if (detect) {
